@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Auxilliary';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls'
-
+import Modal from '../../components/UI/Modal/Modal';
+import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary'
 const INGREDIENT_PRICES={
   salad:0.5,
   cheese:0.4,
@@ -19,7 +20,21 @@ class BurgerBuilder extends Component{
       bacon : 0,
       veggie:0
     },
-    totalprice : 4
+    totalprice : 4,
+    purchaseable: false
+  }
+
+  updatePurchaseableState(ingredients){
+
+    const sum = Object.keys(ingredients)
+                .map(igKey => {
+                  return ingredients[igKey]
+                })
+                .reduce((sum,el) => {
+                  return sum + el;
+                },0);
+
+    this.setState({purchaseable: sum > 0})
   }
   addIngredientHandler = (type) =>{
       const oldCount = this.state.ingredients[type];
@@ -37,6 +52,7 @@ class BurgerBuilder extends Component{
         ingredients : updatedIngredients,
         totalprice : newPrice
       });
+      this.updatePurchaseableState(updatedIngredients);
 
   }
 
@@ -58,6 +74,7 @@ class BurgerBuilder extends Component{
       ingredients : updatedIngredients,
       totalprice : newPrice
     });
+    this.updatePurchaseableState(updatedIngredients);
   }
 
   render(){
@@ -71,11 +88,15 @@ class BurgerBuilder extends Component{
     return(
       <Aux>
         <Burger ingredients = {this.state.ingredients}/>
-      <BuildControls
-        ingredientadded = {this.addIngredientHandler}
-        ingredientremoved={this.removeIngredientHandler}
-        disabled={disbaledInfo}
-        price={this.state.totalprice}/>
+        <BuildControls
+          ingredientadded = {this.addIngredientHandler}
+          ingredientremoved={this.removeIngredientHandler}
+          disabled={disbaledInfo}
+          purchaseable={this.state.purchaseable}
+          price={this.state.totalprice}/>
+        <Modal>
+          <OrderSummary ingredients={this.state.ingredients} />
+        </Modal>
       </Aux>
     );
   }

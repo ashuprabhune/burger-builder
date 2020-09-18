@@ -22,6 +22,9 @@ const buildControls = (props) => {
           disabled={props.disabled[ctrl.type]}/>
       ))}
       <p>Total price: <strong>{props.price.toFixed(2)}</strong></p>
+      <button
+        className={classes.OrderButton}
+        disabled={!props.purchaseable}>Order Now!</button>
     </div>
   );
 }
